@@ -14,6 +14,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.ItemStack;
@@ -63,7 +64,7 @@ public final class ExtraPhobias4 implements ModInitializer {
             ServerPlayerEntity p = (ServerPlayerEntity) o;
             if (p.isSpectator() || p.isDead()) continue;
             for (Phobia ph : NEW) {
-                if (Etat.has(p.getUuid(), ph)) run(p, p.getServerWorld(), ph);
+                if (Etat.has(p.getUuid(), ph)) run(p, (ServerWorld) p.getEntityWorld(), ph);
             }
         }
     }
@@ -236,7 +237,7 @@ public final class ExtraPhobias4 implements ModInitializer {
     private static void hurt(ServerPlayerEntity p, ServerWorld w, Phobia ph, float amount) {
         if (p.isCreative()) return;
         RegistryKey type = key(ph.name().toLowerCase(Locale.ROOT));
-        RegistryEntry entry = ((Registry) w.getRegistryManager().get(RegistryKeys.DAMAGE_TYPE)).getOrThrow(type);
+        RegistryEntry.Reference<DamageType> entry = w.getRegistryManager().getOrThrow(RegistryKeys.DAMAGE_TYPE).getOrThrow(type);
         p.damage(w, new DamageSource(entry), amount);
     }
 
